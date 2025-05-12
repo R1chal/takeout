@@ -40,4 +40,11 @@ public interface EmployeeMapper {
      * @param employee
      */
     void update(Employee employee);
+
+    /**
+     *
+     * @param id the id
+     * @return Employee
+     */
+    Employee getById(Long id);
 }
