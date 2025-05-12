@@ -1,6 +1,5 @@
 package com.sky.service.impl;
 
-import com.fasterxml.jackson.databind.util.BeanUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
@@ -17,6 +16,7 @@ import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.EmployeeMapper;
 import com.sky.result.PageResult;
 import com.sky.service.EmployeeService;
+import lombok.Builder;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ import org.springframework.util.DigestUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
+@Builder
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
@@ -104,6 +104,15 @@ public class EmployeeServiceImpl implements EmployeeService {
         long total = page.getTotal();
         List<Employee> records = page.getResult();
         return new PageResult(total, records);
+    }
+
+    public void changeStatus(Integer status, Long id){
+        //update employee set status =? where id = ?
+        Employee employee = Employee.builder()
+                .status(status)
+                .id(id)
+                .build();
+        employeeMapper.update(employee);
     }
 
 }

@@ -14,4 +14,5 @@ public interface EmployeeService {
 
     public PageResult queryPage(EmployeePageQueryDTO employeePageQueryDTO);
 
+    void changeStatus(Integer status, Long id);
 }
