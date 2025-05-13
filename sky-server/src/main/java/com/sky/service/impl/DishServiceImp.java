@@ -94,9 +94,8 @@ public class DishServiceImp implements DishService {
         }
 
         //删除菜品表中指定的数据
-        for (Long dishId : dishIds) {
-            dishMapper.deleteById(dishId);
-            dishFlavorMapper.deleteByDishId(dishId);
-        }
+        //根据菜品id集合批量删除菜品数据
+        dishMapper.deleteByIds(dishIds);
+        dishFlavorMapper.deleteByDishIds(dishIds);
     }
 }
