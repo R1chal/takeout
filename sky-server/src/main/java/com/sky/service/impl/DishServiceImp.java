@@ -2,12 +2,16 @@ package com.sky.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.sky.constant.MessageConstant;
+import com.sky.constant.StatusConstant;
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
+import com.sky.exception.DeletionNotAllowedException;
 import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
+import com.sky.mapper.SetMealDishMapper;
 import com.sky.result.PageResult;
 import com.sky.service.DishService;
 import com.sky.vo.DishVO;
@@ -29,6 +33,8 @@ public class DishServiceImp implements DishService {
     @Autowired
     private DishFlavorMapper dishFlavorMapper;
 
+    @Autowired
+    private SetMealDishMapper setmealDishMapper;
     /**
      * 新增菜品和对应的口味
      *
@@ -65,5 +71,32 @@ public class DishServiceImp implements DishService {
         PageHelper.startPage(dishPageQueryDTO.getPage(), dishPageQueryDTO.getPageSize());
         Page<DishVO> page = dishMapper.queryPage(dishPageQueryDTO);
         return new PageResult(page.getTotal(), page.getResult());
+    }
+
+    /**
+     * 菜品删除
+     * @param dishIds
+     */
+    @Override
+    @Transactional
+    public void deleteBatch(List<Long> dishIds) {
+        //判断菜品是否能够删除
+        for (Long dishId : dishIds) {
+            Dish dish = dishMapper.getById(dishId);
+            if(dish.getStatus() == StatusConstant.ENABLE){
+                throw new DeletionNotAllowedException(MessageConstant.DISH_ON_SALE);
+            }
+        }
+        //判断是否绑定套餐
+        List<Long> setMealIdsByDishIds = setmealDishMapper.getSetMealIdsByDishIds(dishIds);
+        if(setMealIdsByDishIds != null && !setMealIdsByDishIds.isEmpty()){
+            throw new DeletionNotAllowedException(MessageConstant.DISH_BE_RELATED_BY_SETMEAL);
+        }
+
+        //删除菜品表中指定的数据
+        for (Long dishId : dishIds) {
+            dishMapper.deleteById(dishId);
+            dishFlavorMapper.deleteByDishId(dishId);
+        }
     }
 }

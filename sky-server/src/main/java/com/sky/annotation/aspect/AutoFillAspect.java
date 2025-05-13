@@ -53,16 +53,16 @@ public class AutoFillAspect {
         if (operationType == OperationType.INSERT) {
             try {
                 Method setCreateTime = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_CREATE_TIME, LocalDateTime.class);
-                Method setCreateUser = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_CREATE_USER, Long.class);
+                Method setCreateUser = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_CREATE_USER, LocalDateTime.class);
                 Method setUpdateTime = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_TIME, LocalDateTime.class);
-                Method setUpdateUser = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_USER, Long.class);
+                Method setUpdateUser = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_USER, LocalDateTime.class);
 
                 setCreateTime.invoke(entity, localDateTime);
                 setCreateUser.invoke(entity, currentId);
                 setUpdateTime.invoke(entity, localDateTime);
                 setUpdateUser.invoke(entity, currentId);
             } catch (Exception e) {
-                log.error("公共字段自动填充失败，错误信息：{}", e.getMessage());
+                e.printStackTrace();
             }
 
         } else if (operationType == OperationType.UPDATE) {
@@ -74,7 +74,7 @@ public class AutoFillAspect {
                 setUpdateTime.invoke(entity, localDateTime);
                 setUpdateUser.invoke(entity, currentId);
             } catch (Exception e) {
-                log.error("公共字段自动填充失败，错误信息：{}", e.getMessage());
+                e.printStackTrace();
             }
         }
 
