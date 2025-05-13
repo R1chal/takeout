@@ -12,7 +12,7 @@ public interface EmployeeService {
 
     void save(EmployeeDTO employeeDTO);
 
-    public PageResult queryPage(EmployeePageQueryDTO employeePageQueryDTO);
+    PageResult queryPage(EmployeePageQueryDTO employeePageQueryDTO);
 
     void changeStatus(Integer status, Long id);
 
