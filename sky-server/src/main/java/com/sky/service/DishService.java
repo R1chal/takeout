@@ -3,22 +3,21 @@ package com.sky.service;
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.result.PageResult;
+import com.sky.vo.DishVO;
 
 import java.util.List;
 
 public interface DishService {
 
-    /**
-     * 新增菜品
-     * @param dto
-     */
     void saveWithFlavor(DishDTO dto);
 
     PageResult queryPage(DishPageQueryDTO dishPageQueryDTO);
 
-    /**
-     * 菜品删除
-     * @param dishIds
-     */
     void deleteBatch(List<Long> dishIds);
+
+    DishVO getByIdWithFlavor(Long id);
+
+    void updateWithFlavor(DishDTO dishDTO);
+
+    void updateStatus(Long id, Integer status);
 }
