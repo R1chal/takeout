@@ -16,3 +16,7 @@ sky:
   wechat:
     appid: wx2a8556c76e885049
     secret: 1dce82cea2eb068665c27c0c52b65aa7
+
+  baidu-map:
+    ak: WeNAD3jWKDOd12kICy0rQzjODsiiQa4k
+    address: "江苏省南京市雨花台春江佳园"

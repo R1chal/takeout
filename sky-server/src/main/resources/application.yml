@@ -54,3 +54,8 @@ sky:
   wechat:
     appid: ${sky.wechat.appid}
     secret: ${sly.wechat.secret}
+  # 添加百度地图AK配置
+  baidu-map:
+    ak: ${sky.baidu-map.ak}
+    address: ${sky.baidu-map.address}
+
