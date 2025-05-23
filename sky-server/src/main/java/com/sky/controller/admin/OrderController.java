@@ -38,6 +38,7 @@ public class OrderController {
      * 订单状态统计
      * @return
      */
+    @GetMapping("/statistics")
     public Result<OrderStatisticsVO> statistics(){
         OrderStatisticsVO orderStatisticsVO = orderService.statistics();
         return Result.success(orderStatisticsVO);
