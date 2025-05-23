@@ -10,6 +10,7 @@ import com.sky.result.Result;
 import com.sky.service.OrderService;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderVO;
+import com.sun.org.apache.regexp.internal.RE;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,6 +99,17 @@ public class OrderController {
     @PutMapping("/delivery/{id}")
     public Result delivery(@PathVariable("id") Long id){
         orderService.delivery(id);
+        return Result.success();
+    }
+
+    /**
+     * 完成订单
+     * @param id
+     * @return
+     */
+    @PutMapping("/complete/{id}")
+    public Result complete(@PathVariable("id") Long id){
+        orderService.complete(id);
         return Result.success();
     }
 }
