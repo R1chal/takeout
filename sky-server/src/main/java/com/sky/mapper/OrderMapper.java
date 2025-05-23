@@ -11,10 +11,6 @@ import org.apache.ibatis.annotations.Select;
 @Mapper
 public interface OrderMapper {
 
-    /**
-     *插入订单数据
-     * @param orders
-     */
     void insert(Orders orders);
 
     Page<Orders> queryPage(OrdersPageQueryDTO pageQueryDTO);
@@ -23,4 +19,7 @@ public interface OrderMapper {
     Orders queryById(Long id);
 
     void update(Orders orders);
+
+    @Select("select count(id) from orders where status = #{status}")
+    Integer countStatus(Integer status);
 }
