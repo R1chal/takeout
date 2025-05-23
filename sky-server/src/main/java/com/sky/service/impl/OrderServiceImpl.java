@@ -289,6 +289,24 @@ public class OrderServiceImpl implements OrderService {
 
     }
 
+    @Override
+    public void cancel(OrdersCancelDTO ordersCancelDTO) {
+        //根据订单ID查询
+        Orders orderDB = orderMapper.queryById(ordersCancelDTO.getId());
+
+        //查看支付状态
+        Integer payStatus = orderDB.getStatus();
+        if(payStatus == 1){
+            //TODO需要退款
+        }
+        //管理面取消订单需要退款，根据ID更新订单
+        Orders orders = new Orders();
+        orders.setId(ordersCancelDTO.getId());
+        orders.setStatus(Orders.CANCELLED);
+        orders.setCancelReason(ordersCancelDTO.getCancelReason());
+        orders.setCancelTime(LocalDateTime.now());
+    }
+
     private List<OrderVO> getOrderVOList(Page<Orders> ordersPage) {
         // 需要返回订单菜品信息，自定义OrderVO响应结果
         List<OrderVO> orderVOList = new ArrayList<>();
