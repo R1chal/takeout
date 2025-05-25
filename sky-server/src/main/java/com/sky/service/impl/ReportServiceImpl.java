@@ -5,15 +5,20 @@ import com.sky.entity.Orders;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.UserMapper;
 import com.sky.service.ReportService;
-import com.sky.vo.OrderReportVO;
-import com.sky.vo.SalesTop10ReportVO;
-import com.sky.vo.TurnoverReportVO;
-import com.sky.vo.UserReportVO;
+import com.sky.service.WorkspaceService;
+import com.sky.vo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -33,6 +38,9 @@ public class ReportServiceImpl implements ReportService {
     @Autowired
     private OrderMapper orderMapper;
 
+    @Autowired
+    private WorkspaceService workspaceService;
+
     @Override
     public TurnoverReportVO getTurnStatistics(LocalDate begin, LocalDate end) {
 
@@ -51,9 +59,10 @@ public class ReportServiceImpl implements ReportService {
 
             Map map = new HashMap<>();
             map.put("begin", beginTime);
-            map.put("end",endTime);
+            map.put("end", endTime);
             map.put("status", Orders.COMPLETED);
-            Double turnover = orderMapper.sumByMap(map);;
+            Double turnover = orderMapper.sumByMap(map);
+            ;
             turnover = turnover == null ? 0.0 : turnover;
             turnOverList.add(turnover);
         }
@@ -66,8 +75,8 @@ public class ReportServiceImpl implements ReportService {
     }
 
     /**
-     *
      * 用户状态统计
+     *
      * @param begin
      * @param end
      * @return
@@ -99,7 +108,7 @@ public class ReportServiceImpl implements ReportService {
         }
 
         return UserReportVO.builder()
-                .totalUserList(StringUtils.join(totalList,"，"))
+                .totalUserList(StringUtils.join(totalList, "，"))
                 .newUserList(StringUtils.join(newUserList, "，"))
                 .dateList(StringUtils.join(dateList, "，"))
                 .build();
@@ -133,7 +142,7 @@ public class ReportServiceImpl implements ReportService {
         Integer totalCount = totalCountList.stream().reduce(Integer::sum).get();
 
         Double orderCompleteRate = 0.0;
-        if(totalCount != 0){
+        if (totalCount != 0) {
             orderCompleteRate = validCount.doubleValue() / totalCount;
         }
 
@@ -166,12 +175,60 @@ public class ReportServiceImpl implements ReportService {
                 .build();
     }
 
-    private Integer getOrderCount(LocalDateTime begin, LocalDateTime end,Integer status){
+    private Integer getOrderCount(LocalDateTime begin, LocalDateTime end, Integer status) {
         Map map = new HashMap();
         map.put("begin", begin);
         map.put("end", end);
         map.put("status", status);
 
         return orderMapper.countByMap(map);
+    }
+
+    @Override
+    public void export(HttpServletResponse response) {
+        LocalDate dateBegin = LocalDate.now().minusDays(30);
+        LocalDate dateEnd = LocalDate.now().minusDays(1);
+
+        BusinessDataVO businessData = workspaceService
+                .getBusinessData(
+                        LocalDateTime.of(dateBegin, LocalTime.MIN),
+                        LocalDateTime.of(dateEnd, LocalTime.MAX));
+
+        InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream("template/运营数据报表模板.xlsx");
+
+        try {
+            XSSFWorkbook sheets = new XSSFWorkbook(resourceAsStream);
+            //填充数据
+            XSSFSheet sheet1 = sheets.getSheet("sheet1");
+            sheet1.getRow(1).getCell(1).setCellValue("时间：" + dateBegin + "至" + dateEnd);
+
+            XSSFRow row = sheet1.getRow(3);
+            row.getCell(2).setCellValue(businessData.getTurnover());
+            row.getCell(4).setCellValue(businessData.getOrderCompletionRate());
+            row.getCell(6).setCellValue(businessData.getUnitPrice());
+
+            //填充明细数据
+            for(int i = 0; i < 30; i++){
+                LocalDate localDate = dateBegin.plusDays(i);
+                BusinessDataVO busDateVO = workspaceService.getBusinessData(LocalDateTime.of(localDate, LocalTime.MIN), LocalDateTime.of(localDate, LocalTime.MAX));
+                 row = sheet1.getRow(7 + i);
+                 row.getCell(1).setCellValue(localDate.toString());
+                 row.getCell(2).setCellValue(businessData.getTurnover());
+                 row.getCell(3).setCellValue(businessData.getValidOrderCount());
+                 row.getCell(4).setCellValue(businessData.getOrderCompletionRate());
+                 row.getCell(5).setCellValue(businessData.getUnitPrice());
+                 row.getCell(6).setCellValue(businessData.getNewUsers());
+            }
+
+            ServletOutputStream outputStream = response.getOutputStream();
+            sheets.write(outputStream);
+
+            outputStream.close();
+            sheets.close();
+        } catch (IOException e) {
+
+            throw new RuntimeException(e);
+
+        }
     }
 }
