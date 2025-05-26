@@ -33,6 +33,4 @@
         select * from employee where id = #{id}
     </select>
 
-
-
 </mapper>

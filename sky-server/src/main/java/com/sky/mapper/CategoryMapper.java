@@ -15,7 +15,7 @@ public interface CategoryMapper {
 
     /**
      * 插入数据
-     * @param category
+     * @param category category
      */
     @Insert("insert into category(type, name, sort, status, create_time, update_time, create_user, update_user)" +
             " VALUES" +
@@ -25,8 +25,8 @@ public interface CategoryMapper {
 
     /**
      * 分页查询
-     * @param categoryPageQueryDTO
-     * @return
+     * @param categoryPageQueryDTO categoryPageQueryDTO
+     * @return Page
      */
     Page<Category> pageQuery(CategoryPageQueryDTO categoryPageQueryDTO);
 
@@ -39,15 +39,15 @@ public interface CategoryMapper {
 
     /**
      * 根据id修改分类
-     * @param category
+     * @param category category
      */
     @AutoFill(value = OperationType.UPDATE)
     void update(Category category);
 
     /**
      * 根据类型查询分类
-     * @param type
-     * @return
+     * @param type type
+     * @return Category
      */
     List<Category> list(Integer type);
 }
