@@ -8,6 +8,7 @@ import java.util.Collection;
 public class CollectionUtils {
     /**
      * 判断集合是否为空
+     *
      * @param collection 集合对象
      * @return 为空返回true，否则false
      */
@@ -17,6 +18,7 @@ public class CollectionUtils {
 
     /**
      * 判断集合是否不为空
+     *
      * @param collection 集合对象
      * @return 不为空返回true，否则false
      */

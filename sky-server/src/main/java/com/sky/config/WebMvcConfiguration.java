@@ -52,6 +52,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
 
     /**
      * 通过knife4j生成接口文档
+     *
      * @return
      */
     @Bean
@@ -72,6 +73,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
 
     /**
      * 设置静态资源映射
+     *
      * @param registry
      */
     @Override
@@ -85,13 +87,14 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
 
     /**
      * 扩展Spring MVC消息转化器
+     *
      * @param converts
      */
-    protected void extendMessageConverters(List<HttpMessageConverter<?>> converts){
+    protected void extendMessageConverters(List<HttpMessageConverter<?>> converts) {
         log.info("扩展消息转换器");
-        MappingJackson2HttpMessageConverter converter =  new MappingJackson2HttpMessageConverter();
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         converter.setObjectMapper(new JacksonObjectMapper());
         //转换器加入容器
-        converts.add(0,converter);
+        converts.add(0, converter);
     }
 }
